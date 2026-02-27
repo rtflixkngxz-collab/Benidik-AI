@@ -1,0 +1,5 @@
+flask
+openai
+stripe
+flask-login
+flask-sqlalchemy
