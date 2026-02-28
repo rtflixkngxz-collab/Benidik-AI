@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benidik AI - Professional</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { margin:0; font-family:'Roboto',sans-serif; background:#121212; color:#fff; display:flex; flex-direction:column; height:100vh;}
+header { padding:15px; text-align:center; font-size:1.5rem; font-weight:bold; border-bottom:1px solid #333; }
+.main-buttons { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:15px; }
+.main-buttons button { background:#1e88e5; color:#fff; border:none; padding:12px 20px; border-radius:12px; cursor:pointer; flex:1 1 120px; transition:0.3s; }
+.main-buttons button:hover { background:#1565c0; }
+.chat-container { flex:1; display:flex; flex-direction:column; padding:10px; overflow-y:auto; }
+.chat-message { background:#1e1e1e; padding:10px 15px; border-radius:15px; margin-bottom:10px; max-width:80%; }
+.chat-message.user { align-self:flex-end; background:#2e7d32; }
+.chat-input-container { display:flex; padding:10px; gap:10px; border-top:1px solid #333; }
+.chat-input-container input { flex:1; padding:10px 15px; border-radius:15px; border:none; outline:none; font-size:1rem; }
+.chat-input-container button { background:#00c853; color:#fff; border:none; border-radius:15px; padding:10px 20px; cursor:pointer; font-weight:bold; }
+.chat-input-container button:hover { background:#009624; }
+</style>
+</head>
+<body>
+
+<header>Benidik AI - Professional</header>
+
+<div class="main-buttons">
+  <button onclick="sendCommand('chat')">💬 الدردشة</button>
+  <button onclick="sendCommand('create_image')">🖼️ إنشاء صورة</button>
+  <button onclick="sendCommand('summarize_text')">📄 تلخيص نصوص</button>
+  <button onclick="sendCommand('analyze_data')">📊 تحليل بيانات</button>
+  <button onclick="sendCommand('create_video')">🎥 إنشاء فيديو</button>
+</div>
+
+<div class="chat-container" id="chatContainer"></div>
+
+<div class="chat-input-container">
+  <input type="text" id="userInput" placeholder="اكتب رسالتك هنا...">
+  <button id="sendBtn">إرسال</button>
+</div>
+
+<script>
+const chatContainer = document.getElementById('chatContainer');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function addMessage(text, isUser=false){
+  const msg = document.createElement('div');
+  msg.classList.add('chat-message');
+  if(isUser) msg.classList.add('user');
+  msg.textContent = text;
+  chatContainer.appendChild(msg);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// إرسال رسالة للدردشة
+sendBtn.addEventListener('click', async ()=>{
+  const msg = userInput.value.trim();
+  if(!msg) return;
+  addMessage("أنت: "+msg, true);
+  userInput.value='';
+
+  // طلب من backend
+  const res = await fetch('/api', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:msg})
+  });
+  const data = await res.json();
+  addMessage("Benidik AI: "+data.reply);
+});
+
+// أوامر الأزرار
+function sendCommand(cmd){
+  addMessage("تم تفعيل الأمر: "+cmd);
+}
+</script>
+
+</body>
+</html>
